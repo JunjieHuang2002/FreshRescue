@@ -1,0 +1,8 @@
+# Kept out of the build context of the images (plan, phase 11): the dependencies and the build output, which
+# the image makes for itself with `npm ci` and `npm run build`, the git history, and the local settings, so
+# that nothing built or configured on a laptop reaches an image. `**/` also covers the workspaces, such as
+# apps/web/.next.
+**/node_modules
+**/.next
+.git
+**/.env

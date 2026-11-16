@@ -1,0 +1,85 @@
+{
+  "foodCategories": [
+    { "key": "meat", "name": "Meat", "parentKey": null },
+    { "key": "redMeat", "name": "Red Meat", "parentKey": "meat" },
+    { "key": "poultry", "name": "Poultry", "parentKey": "meat" },
+    { "key": "dairy", "name": "Dairy", "parentKey": null },
+    { "key": "liquidDairy", "name": "Liquid Dairy", "parentKey": "dairy" },
+    { "key": "vegetables", "name": "Vegetables", "parentKey": null },
+    { "key": "leafyGreens", "name": "Leafy Greens", "parentKey": "vegetables" }
+  ],
+  "cuisines": [
+    { "key": "chinese", "name": "Chinese Cuisine" },
+    { "key": "vietnamese", "name": "Vietnamese Cuisine" },
+    { "key": "french", "name": "French Cuisine" }
+  ],
+  "foodTypes": [
+    { "key": "beef", "name": "Beef", "categoryKey": "redMeat", "unit": "grams" },
+    { "key": "broccoli", "name": "Broccoli", "categoryKey": "vegetables", "unit": "grams" },
+    { "key": "chicken", "name": "Chicken", "categoryKey": "poultry", "unit": "grams" },
+    { "key": "egg", "name": "Egg", "categoryKey": null, "unit": "pieces" },
+    { "key": "milk", "name": "Milk", "categoryKey": "liquidDairy", "unit": "ml" },
+    { "key": "rice", "name": "Rice", "categoryKey": null, "unit": "grams" },
+    { "key": "spinach", "name": "Spinach", "categoryKey": "leafyGreens", "unit": "grams" },
+    { "key": "tomato", "name": "Tomato", "categoryKey": "vegetables", "unit": "pieces" }
+  ],
+  "recipes": [
+    {
+      "key": "beefBroccoliStirFry",
+      "name": "Beef and Broccoli Stir-Fry",
+      "cuisineKey": "chinese",
+      "ingredients": [
+        { "foodTypeKey": "beef", "quantity": 300000, "unit": "grams" },
+        { "foodTypeKey": "broccoli", "quantity": 200000, "unit": "grams" }
+      ]
+    },
+    {
+      "key": "chickenBroccoliGratin",
+      "name": "Chicken Broccoli Gratin",
+      "cuisineKey": "french",
+      "ingredients": [
+        { "foodTypeKey": "chicken", "quantity": 250000, "unit": "grams" },
+        { "foodTypeKey": "broccoli", "quantity": 150000, "unit": "grams" },
+        { "foodTypeKey": "milk", "quantity": 100000, "unit": "ml" }
+      ]
+    },
+    {
+      "key": "chickenFriedRice",
+      "name": "Chicken Fried Rice",
+      "cuisineKey": "chinese",
+      "ingredients": [
+        { "foodTypeKey": "chicken", "quantity": 200000, "unit": "grams" },
+        { "foodTypeKey": "rice", "quantity": 300000, "unit": "grams" },
+        { "foodTypeKey": "egg", "quantity": 2000, "unit": "pieces" }
+      ]
+    },
+    {
+      "key": "spinachOmelette",
+      "name": "Spinach Omelette",
+      "cuisineKey": "french",
+      "ingredients": [
+        { "foodTypeKey": "egg", "quantity": 3000, "unit": "pieces" },
+        { "foodTypeKey": "spinach", "quantity": 50000, "unit": "grams" },
+        { "foodTypeKey": "milk", "quantity": 50000, "unit": "ml" }
+      ]
+    },
+    {
+      "key": "tomatoEggStirFry",
+      "name": "Tomato Egg Stir-Fry",
+      "cuisineKey": "chinese",
+      "ingredients": [
+        { "foodTypeKey": "tomato", "quantity": 2000, "unit": "pieces" },
+        { "foodTypeKey": "egg", "quantity": 3000, "unit": "pieces" }
+      ]
+    },
+    {
+      "key": "vietnameseChickenRice",
+      "name": "Vietnamese Chicken Rice",
+      "cuisineKey": "vietnamese",
+      "ingredients": [
+        { "foodTypeKey": "chicken", "quantity": 250000, "unit": "grams" },
+        { "foodTypeKey": "rice", "quantity": 300000, "unit": "grams" }
+      ]
+    }
+  ]
+}

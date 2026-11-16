@@ -1,0 +1,159 @@
+[
+  {
+    "phase": 0,
+    "name": "Dependency tree is consistent",
+    "command": "npm ls"
+  },
+  {
+    "phase": 0,
+    "name": "Typecheck, all five workspaces",
+    "command": "npm run typecheck"
+  },
+  {
+    "phase": 0,
+    "name": "Lint",
+    "command": "npm run lint"
+  },
+  {
+    "phase": 0,
+    "name": "Unit and jsdom tests",
+    "command": "npm test"
+  },
+  {
+    "phase": 0,
+    "name": "Production build, route / is static",
+    "command": "npm run build",
+    "expect": ["○ /\n"]
+  },
+  {
+    "phase": 0,
+    "name": "Boot and wiring",
+    "command": "node tools/smoke-dev.mjs",
+    "expect": ["smoke OK"]
+  },
+  {
+    "phase": 0,
+    "name": "MySQL answers",
+    "command": "npm run db:ping",
+    "expect": ["MySQL OK version=8."]
+  },
+  {
+    "phase": 1,
+    "name": "Workspaces, folders and import graph",
+    "command": "node tools/verify-layout.mjs",
+    "expect": ["layout OK: 13 workspaces, 25 folders, "]
+  },
+  {
+    "phase": 1,
+    "name": "Manifest is complete and consistent",
+    "command": "node tools/verify-manifest.mjs 1",
+    "expect": ["manifest OK: 94 entries (75 modules, 8 gateways, 11 coordinators)"]
+  },
+  {
+    "phase": 1,
+    "name": "Guard rails reject violations",
+    "command": "npx vitest run --project node tools/guards.test.ts",
+    "expect": ["Test Files  1 passed (1)", "Tests  6 passed (6)"]
+  },
+  {
+    "phase": 2,
+    "name": "Contract packages are complete",
+    "command": "node tools/verify-contracts.mjs",
+    "expect": ["contracts OK: 9 packages, 46 source files"]
+  },
+  {
+    "phase": 2,
+    "name": "Contract constants and shapes are pinned",
+    "command": "npx vitest run --project node contracts",
+    "expect": ["Test Files  10 passed (10)", "Tests  35 passed (35)"]
+  },
+  {
+    "phase": 3,
+    "name": "Every module is built, exported and tested for each of its codes",
+    "command": "node tools/verify-manifest.mjs 3",
+    "expect": [
+      "manifest OK: 94 entries (75 modules, 8 gateways, 11 coordinators); 13 due by phase 3, each built, exported and tested for every listed error code"
+    ]
+  },
+  {
+    "phase": 4,
+    "name": "Every module is built, exported and tested for each of its codes",
+    "command": "node tools/verify-manifest.mjs 4",
+    "expect": [
+      "manifest OK: 94 entries (75 modules, 8 gateways, 11 coordinators); 33 due by phase 4, each built, exported and tested for every listed error code"
+    ]
+  },
+  {
+    "phase": 5,
+    "name": "Every module is built, exported and tested for each of its codes",
+    "command": "node tools/verify-manifest.mjs 5",
+    "expect": [
+      "manifest OK: 94 entries (75 modules, 8 gateways, 11 coordinators); 49 due by phase 5, each built, exported and tested for every listed error code"
+    ]
+  },
+  {
+    "phase": 6,
+    "name": "Every module is built, exported and tested for each of its codes",
+    "command": "node tools/verify-manifest.mjs 6",
+    "expect": [
+      "manifest OK: 94 entries (75 modules, 8 gateways, 11 coordinators); 54 due by phase 6, each built, exported and tested for every listed error code"
+    ]
+  },
+  {
+    "phase": 7,
+    "name": "Everything due is built, exported and tested",
+    "command": "node tools/verify-manifest.mjs 7",
+    "expect": [
+      "manifest OK: 94 entries (75 modules, 8 gateways, 11 coordinators); 59 due by phase 7, each built, exported and tested for every listed error code"
+    ]
+  },
+  {
+    "phase": 7,
+    "name": "MySQL passes the same store conformance suite as memory",
+    "command": "npm run test:db"
+  },
+  {
+    "phase": 7,
+    "name": "The HTTP contract holds, state survives a restart, requests run one at a time",
+    "command": "npm run test:e2e"
+  },
+  {
+    "phase": 8,
+    "name": "Everything due is built, exported and tested",
+    "command": "node tools/verify-manifest.mjs 8",
+    "expect": [
+      "manifest OK: 94 entries (75 modules, 8 gateways, 11 coordinators); 85 due by phase 8, each built, exported and tested for every listed error code"
+    ]
+  },
+  {
+    "phase": 9,
+    "name": "Everything due is built, exported and tested",
+    "command": "node tools/verify-manifest.mjs 9",
+    "expect": [
+      "manifest OK: 94 entries (75 modules, 8 gateways, 11 coordinators); 94 due by phase 9, each built, exported and tested for every listed error code"
+    ]
+  },
+  {
+    "phase": 10,
+    "name": "Every error code is seen end to end or explained",
+    "command": "node tools/check-error-codes.mjs",
+    "expect": ["error codes OK: 58 codes ("]
+  },
+  {
+    "phase": 11,
+    "name": "The compose file is valid",
+    "command": "docker compose config -q"
+  },
+  {
+    "phase": 11,
+    "name": "Both images build",
+    "command": "docker compose build",
+    "timeoutSeconds": 1800
+  },
+  {
+    "phase": 11,
+    "name": "The stack runs and answers",
+    "command": "node tools/smoke-compose.mjs",
+    "expect": ["compose OK"]
+  }
+]

@@ -1,0 +1,677 @@
+@import "tailwindcss";
+
+/* Tailwind scans only this app by default. Name every other workspace that holds class names. */
+@source "../../../../packages/frontend/src";
+@source "../../../../contracts/ui/src";
+
+/*
+ * FreshRescue's look lives in the style tokens of the `ui` contract (contracts/ui/src/tokens.ts): every
+ * element that the DOM host paints takes its classes from there. This file gives those classes what they
+ * stand on, and frames the page:
+ *
+ *   @theme             the type, the colours, the shadows, the animations and the icon images
+ *   @utility           the few utilities that the tokens use and Tailwind has no word for
+ *   @layer base        the page itself
+ *   @layer components  the frame of AppHost.tsx and Guide.tsx around the 16 slots: a sidebar, or a top bar
+ *                      with a tab bar at the bottom; the tab sections; the guide; the overlay layer
+ *
+ * Nothing here knows how a view builds its tree. The frame knows only the slots and their `hidden`
+ * attribute, and whether a slot has anything painted in it.
+ */
+
+@theme {
+  --font-sans:
+    "Inter", "Segoe UI Variable Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-display:
+    ui-rounded, "SF Pro Rounded", "Segoe UI Variable Display", "Inter", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+
+  --color-brand-50: #eefaf3;
+  --color-brand-100: #d9f2e4;
+  --color-brand-200: #b3e4c9;
+  --color-brand-300: #7fcfa4;
+  --color-brand-400: #43b47b;
+  --color-brand-500: #1d975d;
+  --color-brand-600: #0a7d4f;
+  --color-brand-700: #076741;
+  --color-brand-800: #065235;
+  --color-brand-900: #053f2a;
+
+  /* the page */
+  --color-surface: #ffffff;
+  --color-soft: #f4f7f3;
+  --color-sunken: #e9efe7;
+  --color-glass: rgb(252 253 251 / 0.9);
+  --color-line: rgb(15 45 28 / 0.09);
+  --color-line-strong: rgb(15 45 28 / 0.16);
+  --color-ink: #0f2219;
+  --color-ink-2: #2a3f34;
+  --color-muted: #5b6e64;
+
+  /* the three freshness states and the info tone: a dot or bar colour, a text colour, a tint */
+  --color-fresh: #1fa463;
+  --color-fresh-ink: #10703f;
+  --color-fresh-soft: #dcf4e5;
+  --color-near: #f59e0b;
+  --color-near-ink: #8a4a00;
+  --color-near-soft: #fff1d6;
+  --color-expired: #ef4444;
+  --color-expired-ink: #b42318;
+  --color-expired-soft: #fde5e2;
+  --color-info: #2f7bd8;
+  --color-info-ink: #0b5cad;
+  --color-info-soft: #e2eeff;
+
+  /* confirming a deletion, and Cook & Deduct */
+  --color-danger: #c9342a;
+  --color-danger-strong: #a82a21;
+  --color-cook: #c74716;
+  --color-cook-strong: #a5360b;
+  --color-cook-deep: #8e2e09;
+
+  --shadow-hairline: 0 1px 1px rgb(15 34 25 / 0.04);
+  --shadow-card: 0 1px 2px rgb(15 34 25 / 0.05), 0 2px 8px -4px rgb(15 34 25 / 0.08);
+  --shadow-float: 0 1px 2px rgb(15 34 25 / 0.05), 0 14px 30px -16px rgb(15 34 25 / 0.24);
+  --shadow-pop: 0 2px 6px rgb(15 34 25 / 0.06), 0 28px 60px -24px rgb(15 34 25 / 0.38);
+  --shadow-sheet: 0 40px 100px -30px rgb(8 30 20 / 0.55), 0 12px 30px -16px rgb(8 30 20 / 0.35);
+  --shadow-primary: 0 1px 2px rgb(7 80 50 / 0.25), 0 10px 22px -12px rgb(10 125 79 / 0.75);
+  --shadow-danger: 0 1px 2px rgb(120 20 14 / 0.25), 0 10px 22px -12px rgb(201 52 42 / 0.8);
+  --shadow-cook: 0 1px 2px rgb(120 40 10 / 0.3), 0 12px 24px -12px rgb(194 65 12 / 0.85);
+  --shadow-chip: 0 6px 16px -8px rgb(15 34 25 / 0.6);
+  --shadow-logo: 0 6px 14px -6px rgb(10 125 79 / 0.7), inset 0 0 0 1px rgb(255 255 255 / 0.25);
+  --shadow-bar: 0 -10px 30px -20px rgb(15 34 25 / 0.35);
+
+  --animate-pop: fr-pop 0.22s ease both;
+  --animate-sheet: fr-sheet 0.32s cubic-bezier(0.2, 0.85, 0.25, 1) both;
+  --animate-sheet-up: fr-sheet-up 0.32s cubic-bezier(0.2, 0.85, 0.25, 1) both;
+  --animate-toast: fr-toast 0.38s cubic-bezier(0.2, 0.9, 0.25, 1.15) both;
+  --animate-glow: fr-glow 1.4s ease-out 2;
+
+  /* the icons of the tokens' `icon-*` classes: 24 × 24 strokes, drawn as masks in the colour of the text */
+  --icon-fridge: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 6a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2Z'/%3E%3Cpath d='M5 10h14M15 5.5v1.5M15 13v3.5'/%3E%3C/svg%3E");
+  --icon-bell: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9'/%3E%3Cpath d='M10.3 21a1.94 1.94 0 0 0 3.4 0'/%3E%3C/svg%3E");
+  --icon-buoy: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='m4.93 4.93 4.24 4.24M14.83 9.17l4.24-4.24M14.83 14.83l4.24 4.24M9.17 14.83l-4.24 4.24'/%3E%3C/svg%3E");
+  --icon-pot: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12h20M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8M4 8l16-4'/%3E%3Cpath d='m8.86 6.78-.45-1.81a2 2 0 0 1 1.45-2.43l1.94-.48a2 2 0 0 1 2.43 1.46l.45 1.8'/%3E%3C/svg%3E");
+  --icon-tag: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12.59 2.59A2 2 0 0 0 11.17 2H4a2 2 0 0 0-2 2v7.17a2 2 0 0 0 .59 1.42l8.7 8.7a2.43 2.43 0 0 0 3.42 0l6.58-6.58a2.43 2.43 0 0 0 0-3.42Z'/%3E%3Ccircle cx='7.5' cy='7.5' r='1.5'/%3E%3C/svg%3E");
+  --icon-leaf: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z'/%3E%3Cpath d='M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12'/%3E%3C/svg%3E");
+  --icon-history: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 1 0 3-6.7L3 8'/%3E%3Cpath d='M3 3v5h5M12 7v5l4 2'/%3E%3C/svg%3E");
+  --icon-calendar: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M16 2v4M8 2v4M3 10h18'/%3E%3C/svg%3E");
+  --icon-hourglass: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 22h14M5 2h14'/%3E%3Cpath d='M17 22v-4.17a2 2 0 0 0-.59-1.42L12 12l-4.41 4.41A2 2 0 0 0 7 17.83V22M7 2v4.17a2 2 0 0 0 .59 1.42L12 12l4.41-4.41A2 2 0 0 0 17 6.17V2'/%3E%3C/svg%3E");
+  --icon-plus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E");
+  --icon-x: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E");
+  --icon-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m12 19-7-7 7-7M19 12H5'/%3E%3C/svg%3E");
+  --icon-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M12 5l7 7-7 7'/%3E%3C/svg%3E");
+  --icon-up: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 15-6-6-6 6'/%3E%3C/svg%3E");
+  --icon-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  --icon-flame: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5Z'/%3E%3C/svg%3E");
+  --icon-trash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6'/%3E%3C/svg%3E");
+  --icon-pencil: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21.17 6.81a1 1 0 0 0-3.99-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5ZM15 5l4 4'/%3E%3C/svg%3E");
+  --icon-swap: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m16 3 4 4-4 4M20 7H4M8 21l-4-4 4-4M4 17h16'/%3E%3C/svg%3E");
+  --icon-alert: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 8v4M12 16h.01'/%3E%3C/svg%3E");
+  --icon-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+  --icon-check-circle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='m8.5 12 2.5 2.5 4.5-5'/%3E%3C/svg%3E");
+  --icon-sparkle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4l1.9 5.1L19 11l-5.1 1.9L12 18l-1.9-5.1L5 11l5.1-1.9Z'/%3E%3Cpath d='M19 3v3M17.5 4.5h3'/%3E%3C/svg%3E");
+  --icon-lock: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='11' width='16' height='10' rx='2'/%3E%3Cpath d='M8 11V7a4 4 0 0 1 8 0v4'/%3E%3C/svg%3E");
+}
+
+/* ============================================================================================ */
+/* utilities that the tokens use                                                                */
+/* ============================================================================================ */
+
+/* An icon in front of the words: the image of an `icon-*` class, in the colour of the text unless a
+   `glyph-tint-*` names another. `--glyph-size` and `--glyph-gap` set its size and the room after it. */
+@utility glyph {
+  &::before {
+    content: "";
+    display: inline-block;
+    flex: none;
+    width: var(--glyph-size, 1.15em);
+    height: var(--glyph-size, 1.15em);
+    margin-inline-end: var(--glyph-gap, 0.5em);
+    vertical-align: -0.2em;
+    background: var(--glyph-color, currentColor);
+    -webkit-mask: var(--glyph) center / contain no-repeat;
+    mask: var(--glyph) center / contain no-repeat;
+  }
+}
+
+/* The same icon behind the words. */
+@utility glyph-after {
+  &::after {
+    content: "";
+    display: inline-block;
+    flex: none;
+    width: var(--glyph-size, 1em);
+    height: var(--glyph-size, 1em);
+    margin-inline-start: var(--glyph-gap, 0.5em);
+    vertical-align: -0.15em;
+    background: var(--glyph-color, currentColor);
+    -webkit-mask: var(--glyph) center / contain no-repeat;
+    mask: var(--glyph) center / contain no-repeat;
+  }
+}
+
+@utility icon-* {
+  --glyph: --value(--icon-*);
+}
+
+@utility glyph-tint-* {
+  --glyph-color: --value(--color-*);
+}
+
+/* as many columns of at least the given width as there is room for */
+@utility grid-fill-* {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, --value([length])), 1fr));
+}
+
+/* a row of the recipe form: Food Type, quantity, unit and the remove button */
+@utility grid-fields {
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1fr) auto;
+}
+
+/* bottom padding that stays clear of the home bar of a phone */
+@utility pb-safe-* {
+  padding-bottom: calc(--spacing(--value(number)) + env(safe-area-inset-bottom));
+}
+
+/* a sheet takes the width that its slot asks for (`--sheet-w`, see the overlays below), and leaves a margin */
+@utility sheet-width {
+  max-width: min(var(--sheet-w, 540px), calc(100vw - 32px));
+}
+
+@utility bg-logo {
+  background:
+    var(--fr-leaf-white) center / 56% no-repeat,
+    linear-gradient(140deg, #3ecf8e 0%, #0a7d4f 55%, #065235 100%);
+}
+
+@utility bg-alarm {
+  background:
+    var(--fr-warn-red) center / 26px no-repeat,
+    var(--color-expired-soft);
+}
+
+@utility select-chevron {
+  background-image: var(--fr-chevron);
+  background-position: right 14px center;
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+}
+
+@utility scrollbar-hidden {
+  scrollbar-width: none;
+}
+
+/* ============================================================================================ */
+/* base: the page                                                                               */
+/* ============================================================================================ */
+
+@layer base {
+  :root {
+    color-scheme: light;
+
+    /* images in a colour of their own, used as backgrounds */
+    --fr-leaf-white: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z'/%3E%3Cpath d='M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12'/%3E%3C/svg%3E");
+    --fr-warn-red: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b42318' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3'/%3E%3Cpath d='M12 9v4M12 17h.01'/%3E%3C/svg%3E");
+    --fr-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235b6e64' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+
+    --fr-sidebar: 272px;
+    --fr-tabbar: 68px;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scrollbar-gutter: stable;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    min-height: 100dvh;
+    background: #f2f6f0;
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-brand-200);
+    color: var(--color-ink);
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ============================================================================================ */
+/* components: the page frame around the slots                                                  */
+/* ============================================================================================ */
+
+@layer components {
+  .fr-root {
+    position: relative;
+    min-height: 100dvh;
+  }
+
+  /* the soft light behind everything */
+  .fr-scenery {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(56rem 36rem at 105% -8%, rgb(253 224 71 / 0.26), transparent 62%),
+      radial-gradient(48rem 34rem at -12% 6%, rgb(52 199 123 / 0.2), transparent 60%),
+      radial-gradient(44rem 30rem at 70% 112%, rgb(251 146 60 / 0.14), transparent 62%),
+      linear-gradient(180deg, #f6faf4 0%, #eef4ec 100%);
+  }
+
+  /* until the frame is painted, the logo breathes instead of an empty page */
+  .fr-boot {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    transition:
+      opacity 0.35s ease,
+      visibility 0.35s;
+  }
+
+  .fr-boot__mark {
+    width: 60px;
+    height: 60px;
+    border-radius: 20px;
+    box-shadow: 0 18px 40px -16px rgb(10 125 79 / 0.65);
+    animation: fr-breathe 1.4s ease-in-out infinite;
+  }
+
+  .fr-root:has([data-slot="shell"] > *) .fr-boot {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .fr-app {
+    transition: opacity 0.45s ease;
+  }
+
+  .fr-root:not(:has([data-slot="shell"] > *)) .fr-app {
+    opacity: 0;
+  }
+
+  /* ---- the top bar (narrow) or the sidebar (wide) ---- */
+
+  /* on a small phone with a Simulated Today, the clock wraps under the name instead of widening the page */
+  .fr-header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 12px;
+    padding: max(10px, env(safe-area-inset-top)) 16px 10px;
+  }
+
+  /* the glass lives on a layer of its own, so the fixed tab bar inside the header stays fixed to the window */
+  .fr-header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-bottom: 1px solid var(--color-line);
+    background: rgb(250 252 249 / 0.78);
+    -webkit-backdrop-filter: blur(18px) saturate(1.5);
+    backdrop-filter: blur(18px) saturate(1.5);
+  }
+
+  .fr-clock {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    margin-left: auto;
+  }
+
+  .fr-clock__label {
+    display: none;
+  }
+
+  /* ---- the tabs ---- */
+
+  .fr-main {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding: 20px 16px calc(var(--fr-tabbar) + 36px + env(safe-area-inset-bottom));
+  }
+
+  .fr-section {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    width: 100%;
+    max-width: 1160px;
+    margin-inline: auto;
+    animation: fr-rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  /* a section shows while its slot does: AppShellView hides the slots of the other tabs */
+  .fr-section--inventory:has(> [data-slot="inventoryList"][hidden]):has(> [data-slot="foodTypeDetail"][hidden]),
+  .fr-section--warnings:has(> [data-slot="warnings"][hidden]),
+  .fr-section--recommendations:has(> [data-slot="recommendations"][hidden]),
+  .fr-section--cook:has([data-slot="catalog"][hidden]),
+  .fr-section--categories:has(> [data-slot="categories"][hidden]) {
+    display: none;
+  }
+
+  /* the welcome belongs to the list, not to the detail of a Food Type */
+  .fr-section--inventory:has(> [data-slot="inventoryList"][hidden]) > .fr-hero {
+    display: none;
+  }
+
+  .fr-section--inventory > [data-slot] {
+    animation: fr-fade 0.35s ease both;
+  }
+
+  .fr-eyebrow {
+    margin-bottom: -8px;
+  }
+
+  /* ---- the welcome ---- */
+
+  .fr-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: 30px;
+    color: #fff;
+    background: #065235;
+    box-shadow: 0 30px 70px -36px rgb(6 82 53 / 0.75);
+  }
+
+  .fr-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(34rem 20rem at 100% 0%, rgb(163 230 53 / 0.36), transparent 62%),
+      radial-gradient(28rem 18rem at 0% 110%, rgb(250 204 21 / 0.24), transparent 60%),
+      linear-gradient(140deg, #0b8a57 0%, #076741 48%, #053f2a 100%);
+  }
+
+  .fr-hero::after {
+    content: "";
+    position: absolute;
+    top: -70px;
+    right: -70px;
+    z-index: -1;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.06);
+    box-shadow:
+      0 0 0 44px rgb(255 255 255 / 0.04),
+      0 0 0 88px rgb(255 255 255 / 0.025);
+  }
+
+  /* ---- the recipe catalog and its cook queue ---- */
+
+  .fr-cook {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* the queue is painted from the first recipe that is queued on; until then the hint holds its place */
+  .fr-cook:has(> [data-slot="cookQueue"]:not(:empty)) > .fr-queue-hint {
+    display: none;
+  }
+
+  /* below the two-column width, a queue that can be cooked (its buttons are enabled) docks at the bottom of the window */
+  .fr-cook > [data-slot="cookQueue"]:has(button:not(:disabled)) {
+    position: sticky;
+    bottom: calc(var(--fr-tabbar) + 12px + env(safe-area-inset-bottom));
+    z-index: 6;
+  }
+
+  /* ---- notices and overlays ---- */
+
+  /* the notices float above everything, the dialogs included, because a refused deletion keeps its dialog open */
+  .fr-app > [data-slot="notices"] {
+    position: fixed;
+    top: calc(env(safe-area-inset-top) + 10px);
+    right: 12px;
+    left: 12px;
+    z-index: 70;
+    pointer-events: none;
+  }
+
+  /* the width that a sheet asks for, by its slot */
+  .fr-overlays > [data-slot="recipeForm"] {
+    --sheet-w: 760px;
+  }
+
+  .fr-overlays > [data-slot="confirm"] {
+    --sheet-w: 460px;
+  }
+
+  .fr-overlays > [data-slot="cookReport"] {
+    --sheet-w: 580px;
+  }
+
+  /* the dimmed page behind an open sheet: a closed form paints an empty box, so a box with something in it is an open one */
+  .fr-overlays > [data-slot]:has(> div:not(:empty))::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgb(7 22 15 / 0.42);
+    -webkit-backdrop-filter: blur(6px) saturate(1.2);
+    backdrop-filter: blur(6px) saturate(1.2);
+    animation: fr-fade 0.25s ease both;
+  }
+
+  /* while a sheet is open the page behind it stays put */
+  html:has(.fr-overlays > [data-slot]:not([hidden]) > div:not(:empty)) {
+    overflow: hidden;
+  }
+
+  @media (min-width: 640px) {
+    .fr-app > [data-slot="notices"] {
+      top: 20px;
+      right: 20px;
+      left: auto;
+      width: 400px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .fr-header {
+      position: fixed;
+      inset: 0 auto 0 0;
+      width: var(--fr-sidebar);
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      gap: 28px;
+      padding: 26px 18px 20px;
+      overflow-y: auto;
+      border-right: 1px solid var(--color-line);
+      background: rgb(250 252 249 / 0.7);
+      -webkit-backdrop-filter: blur(18px) saturate(1.5);
+      backdrop-filter: blur(18px) saturate(1.5);
+    }
+
+    /* the sidebar holds nothing fixed, so it carries its glass itself, and the glass scrolls with it */
+    .fr-header::before {
+      display: none;
+    }
+
+    .fr-clock {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+      margin-top: auto;
+      margin-left: 0;
+    }
+
+    .fr-clock__label {
+      display: block;
+      padding-inline: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+    }
+
+    .fr-main {
+      gap: 32px;
+      margin-left: var(--fr-sidebar);
+      padding: 40px clamp(24px, 4vw, 56px) 64px;
+    }
+
+    .fr-cook > [data-slot="cookQueue"]:has(button:not(:disabled)) {
+      bottom: 16px;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .fr-cook {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      grid-template-rows: auto 1fr;
+      column-gap: 28px;
+      row-gap: 0;
+      align-items: start;
+    }
+
+    .fr-cook > [data-slot="catalog"] {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+    }
+
+    .fr-cook > .fr-queue-hint {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .fr-cook > [data-slot="cookQueue"],
+    .fr-cook > [data-slot="cookQueue"]:has(button:not(:disabled)) {
+      position: sticky;
+      top: 24px;
+      bottom: auto;
+      grid-column: 2;
+      grid-row: 2;
+      align-self: start;
+    }
+  }
+}
+
+/* ============================================================================================ */
+/* motion                                                                                       */
+/* ============================================================================================ */
+
+@keyframes fr-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fr-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fr-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fr-sheet {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fr-sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes fr-toast {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fr-breathe {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(0.92);
+  }
+}
+
+@keyframes fr-glow {
+  from {
+    box-shadow:
+      0 0 0 0 rgb(10 125 79 / 0.45),
+      var(--shadow-float);
+  }
+  to {
+    box-shadow:
+      0 0 0 14px rgb(10 125 79 / 0),
+      var(--shadow-float);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "@freshrescue/contract-views",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@freshrescue/contract-errors": "*",
+    "@freshrescue/contract-primitives": "*",
+    "@freshrescue/contract-rules": "*"
+  }
+}

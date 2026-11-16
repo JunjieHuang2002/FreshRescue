@@ -1,0 +1,55 @@
+# FreshRescue in Docker (plan, phase 11): MySQL, the API and the web app.
+#
+#   docker compose up --build -d --wait     build, start, and wait until all three services are healthy
+#   open http://localhost:3000
+#   docker compose down -v                  stop, and erase the data
+#
+# Only the web app is published, on port 3000, and it forwards /api/* to the API inside the network of
+# the stack. The API takes the TZ of the shell that starts the stack, so that "today" is the calendar day
+# of this machine; with no TZ it is UTC (README.md, "The time zone").
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: freshrescue
+      MYSQL_USER: freshrescue
+      # the public demo password of .env.example; root gets a random one that nothing needs
+      MYSQL_PASSWORD: FreshRescue_dev_1
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      # over TCP: while the image initialises a new data folder, its temporary server takes no TCP
+      # connection, so the service turns healthy only once the real server is up
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+
+  api:
+    build:
+      context: .
+      target: api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mysql://freshrescue:FreshRescue_dev_1@db:3306/freshrescue
+      API_PORT: "4000"
+      TZ: ${TZ:-UTC}
+
+  web:
+    build:
+      context: .
+      target: web
+      args:
+        API_ORIGIN: http://api:4000
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+
+volumes:
+  db-data:

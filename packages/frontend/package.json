@@ -1,0 +1,21 @@
+{
+  "name": "@freshrescue/frontend",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@freshrescue/contract-errors": "*",
+    "@freshrescue/contract-messages": "*",
+    "@freshrescue/contract-primitives": "*",
+    "@freshrescue/contract-rules": "*",
+    "@freshrescue/contract-ui": "*",
+    "@freshrescue/contract-views": "*",
+    "xstate": "^5.33.4"
+  }
+}

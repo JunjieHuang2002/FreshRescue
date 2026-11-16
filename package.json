@@ -1,0 +1,53 @@
+{
+  "name": "freshrescue",
+  "version": "0.0.0",
+  "description": "FreshRescue MVP: read-only contracts, blind-box modules and thin coordinators in one monorepo",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "vitest run --project node --project dom",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint .",
+    "test:db": "vitest run --project db",
+    "test:e2e": "vitest run --project e2e",
+    "build": "npm run build -w @freshrescue/web",
+    "dev:api": "npm run dev -w @freshrescue/api",
+    "dev:web": "npm run dev -w @freshrescue/web",
+    "dev": "concurrently -k -n api,web -c blue,green \"npm:dev:api\" \"npm:dev:web\"",
+    "db:ping": "node tools/db-ping.mjs",
+    "gate": "node tools/gate.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JunjieHuang2002/FreshRescue.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/JunjieHuang2002/FreshRescue/issues"
+  },
+  "homepage": "https://github.com/JunjieHuang2002/FreshRescue#readme",
+  "private": true,
+  "engines": {
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+  },
+  "workspaces": [
+    "contracts/*",
+    "packages/*",
+    "apps/*"
+  ],
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.20.5",
+    "concurrently": "^10.0.7",
+    "eslint": "^10.15.0",
+    "globals": "^17.14.0",
+    "jsdom": "^31.0.1",
+    "typescript": "~6.0",
+    "typescript-eslint": "^8.72.2",
+    "vitest": "^5.1.0"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "@freshrescue/backend",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@freshrescue/contract-changeset": "*",
+    "@freshrescue/contract-entities": "*",
+    "@freshrescue/contract-errors": "*",
+    "@freshrescue/contract-messages": "*",
+    "@freshrescue/contract-primitives": "*",
+    "@freshrescue/contract-rules": "*",
+    "@freshrescue/contract-seed": "*",
+    "@freshrescue/contract-views": "*",
+    "express": "^5.3.0",
+    "joi": "^18.3.2",
+    "mysql2": "^3.24.6"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6"
+  }
+}
